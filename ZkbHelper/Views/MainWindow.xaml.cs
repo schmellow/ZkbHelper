@@ -131,7 +131,6 @@ namespace ZkbHelper.Views
                         var id = ESI.GetCharacterIdString(name);
                         if (string.IsNullOrEmpty(id))
                             continue;
-                        Logger.Instance.Write(string.Format("Found '{0}' -> {1}", name, id));
                         var url = string.Format("https://zkillboard.com/character/{0}/", id);
                         Logger.Instance.Write("Url: " + url);
                         Process.Start(url);
