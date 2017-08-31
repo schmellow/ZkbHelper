@@ -1,0 +1,35 @@
+﻿<Window x:Class="ZkbHelper.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="ZkbHelper" Height="350" Width="525"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" Name="rowSearch"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" Name="rowLog"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBox Name="tbSearchQuery" Grid.Row="0" Grid.Column="0" 
+                 ToolTip="Enter character name(s) (comma as separator)" 
+                 KeyDown="tbSearchQuery_KeyDown"/>
+        <Button Name="bClear" Grid.Row="0" Grid.Column="1"
+                Click="bClear_Click">&#x274c;</Button>
+        <ToggleButton Name="toggleListener" Grid.Row="0" Grid.Column="2"
+                      Margin="5,0,0,0"
+                      ToolTip="Toggle clipboard listener on/off">&#x1f441;</ToggleButton>
+        <Separator Grid.Row="1" Grid.ColumnSpan="3"/>
+        <TextBox Name="tbLog" Grid.Row="2" Grid.ColumnSpan="3" 
+                 IsReadOnly="True" 
+                 HorizontalScrollBarVisibility="Auto"
+                 VerticalScrollBarVisibility="Auto"/>
+    </Grid>
+</Window>
