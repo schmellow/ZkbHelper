@@ -1,37 +1,26 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 using ZkbHelper.Logging;
-using System.IO;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace ZkbHelper
+namespace ZkbHelper.DataSources
 {
     public static class ESI
     {
         private const string SEARCH_COMMAND = "https://esi.tech.ccp.is/latest/search/?categories=character&datasource=tranquility&language=en-us&search={0}&strict=true&user_agent=zkbhelper";
         public static string GetCharacterIdString(string characterName)
         {
-            var id = "";
             try
             {
-                Dictionary<string, string> cache = null;
-                // try from local cache
-                if(File.Exists("cache.json"))
+                var normalizedName = characterName.ToLowerInvariant();
+                // try cache
+                var id = LocalIdCache.GetId(normalizedName);
+                if (string.IsNullOrEmpty(id) == false)
                 {
-                    cache = JsonConvert.DeserializeObject<Dictionary<string, string>>(
-                        File.ReadAllText("cache.json"));
-                    if (cache.TryGetValue(characterName, out id))
-                    {
-                        Logger.Instance.Write(string.Format("[Cache] Found '{0}' -> {1}", characterName, id));
-                        return id;
-                    }
+                    Logger.Instance.Write(string.Format("[Cache] Found '{0}' -> {1}", characterName, id));
+                    return id;
                 }
-                // try from remote
-                if (cache == null)
-                    cache = new Dictionary<string, string>();
-                var command = string.Format(SEARCH_COMMAND, characterName);
+                // try remote
+                var command = string.Format(SEARCH_COMMAND, normalizedName);
                 var json = RestClient.ExecuteGet(command);
                 if(string.IsNullOrEmpty(json))
                 {
@@ -45,19 +34,16 @@ namespace ZkbHelper
                 {
                     var obj = JObject.Parse(json);
                     id = obj["character"].First.Value<string>();
-                    cache[characterName] = id;
+                    LocalIdCache.StoreId(normalizedName, id);
                     Logger.Instance.Write(string.Format("[ESI] Found '{0}' -> {1}", characterName, id));
-                    Task.Run(() =>
-                    {
-                        File.WriteAllText("cache.json", JsonConvert.SerializeObject(cache));
-                    });
+                    return id;
                 }
             }
             catch(Exception ex)
             {
                 Logger.Instance.Write(ex.ToString());
             }
-            return id;
+            return string.Empty;
         }
     }
 }
